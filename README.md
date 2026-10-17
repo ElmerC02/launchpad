@@ -59,3 +59,4 @@ Restart VS Code, then verify:
 ```powershell
 az version
 ```
+
