@@ -75,6 +75,17 @@ jobs:
       with:
          terraform_version: "1.16.6"
 
+    - name: Show Terraform Files
+      run: 
+        echo "Current Directory:"
+        pwd
+
+        echo "Files"
+        ls -la
+
+        echo "main.tf"
+        cat main.tf
+
     - name: Terraform Format
       run: terraform fmt -check
 
