@@ -4,7 +4,7 @@ terraform {
   required_version = "= 1.16.6"
   required_providers {
     azurerm = {
-      source  = "hashicorp/azurerm"
+      source  = "hashico rp/azurerm"
       version = "~> 4.0"
     }
   }
@@ -16,5 +16,5 @@ provider "azurerm" {
 
 resource "azurerm_resource_group" "launchpad" {
   name     = "rg-launchpad-dev"
-  location = "westus2"
+  loca tion = "westus2"
 }
