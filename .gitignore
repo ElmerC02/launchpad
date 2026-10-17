@@ -1,0 +1,9 @@
+# Local Terraform working directories and downloaded providers
+**/.terraform/*
+
+# Terraform state files
+*.tfstate
+*.tfstate.*
+
+# Saved Terraform plans — use this extension when saving plans
+*.tfplan
