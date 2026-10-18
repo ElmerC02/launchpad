@@ -5,10 +5,10 @@
 <!-- What does this solve?-->
 
 ## Type
-- [ ] Infrastructure (Terraform)
-- [ ] Pipeline (GitHub Actions)
-- [ ] App
-- [ ] Docs/Setup
+- [] Infrastructure (Terraform)
+- [] Pipeline (GitHub Actions)
+- [] App
+- [] Docs/Setup
 
 ## How did you test it?
 <!-- Ran it locally, etcc...-->
@@ -17,7 +17,7 @@
 <!-- How does this change the Terraform infrastructure?-->
 
 ## Checklist
-- [ ] Branch name follows [docs/CONTRIBUTING-GUIDE.md](../docs/CONTRIBUTING.md)
-- [ ] No secrets in commited files
-- [ ] Checks are passing
-- [ ] Docs updated if behavior changed
+- [] Branch name follows [docs/CONTRIBUTING.md](../docs/CONTRIBUTING.md)
+- [] No secrets in committed files
+- [] Checks are passing
+- [] Docs updated if behavior changed
