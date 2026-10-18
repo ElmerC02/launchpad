@@ -17,7 +17,7 @@
 <!-- How does this change the Terraform infrastructure?-->
 
 ## Checklist
-- [ ] Branch name follows our CONTRIBUTING.md
+- [ ] Branch name follows [docs/CONTRIBUTING-GUIDE.md](../docs/CONTRIBUTING.md)
 - [ ] No secrets in commited files
 - [ ] Checks are passing
 - [ ] Docs updated if behavior changed
