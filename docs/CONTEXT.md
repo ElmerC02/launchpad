@@ -53,11 +53,11 @@ For this first test, do **not** add:
 
 ### First-test completion criteria
 
-1. ✅ Terraform and GitHub Actions work are completed and merged to `main`.
-2. ⏳ Automated Terraform checks pass — the workflow runs `fmt -check`, `init -backend=false` and `validate`; confirm the latest run on `main` is green in the GitHub Actions tab.
-3. ❓ Nelo runs Terraform locally and creates the empty resource group — not yet confirmed.
-4. ❓ The resource group is confirmed to exist — not yet confirmed.
-5. ❓ Nelo's partner has an appropriate Azure role if they need to view/manage the resource — not yet done.
+1. Terraform and GitHub Actions work are completed and reviewed. **Done** (merged to `main`).
+2. Automated Terraform checks pass. **Needs confirmation** (check the latest run on `main` in the GitHub Actions tab).
+3. Nelo runs Terraform locally and creates the empty resource group. **Not yet confirmed.**
+4. The resource group is confirmed to exist. **Not yet confirmed.**
+5. Nelo's partner has an appropriate Azure role if they need to view/manage the resource. **Not yet done.**
 6. Only after this works should the project add shared remote state and automated Azure deployment.
 
 ---
@@ -86,13 +86,12 @@ The README is no longer just `# launchpad`; it is now a setup guide for Git, Git
 
 ### Branches on GitHub
 
-| Branch | Status vs `main` |
-| --- | --- |
-| `main` | Shared branch. Terraform config and CI workflow are merged (PRs #1–#15). |
-| `feature/terraform-foundation` | 1 unmerged commit, `Test`, that deliberately breaks `main.tf` (`source = "hashico rp/azurerm"`, `loca tion = ...`). Appears to be the CI failure test — **must not be merged**. |
-| `docs/contributing` | 2 unmerged commits: adds `docs/CONTRIBUTING.md` and updates the PR template. Needs a PR (see Known Issues). |
-| `Terraform-Workflow-Init` | Fully merged; can be deleted. |
-| `chore/pr-template`, `docs/context-init` | Older branches, already merged; can be deleted. |
+- `main`: shared branch. Terraform config and CI workflow are merged (PRs #1–#15).
+- `feature/terraform-foundation`: 1 unmerged commit, `Test`, that deliberately breaks `main.tf` (`source = "hashico rp/azurerm"`, `loca tion = ...`). Appears to be the CI failure test. **Must not be merged.**
+- `docs/contributing`: 2 unmerged commits that add `docs/CONTRIBUTING.md` and update the PR template. Needs a PR (see Known Issues).
+- `docs/update-context`: this CONTEXT.md update.
+- `Terraform-Workflow-Init`: fully merged; can be deleted.
+- `chore/pr-template`, `docs/context-init`: older branches, already merged; can be deleted.
 
 The partner's planned `feature/github-actions` branch does not exist on GitHub. The workflow work was done instead on `Terraform-Workflow-Init` and a series of `ElmerC02-patch-*` branches edited directly on GitHub (PRs #10–#15).
 
@@ -231,9 +230,9 @@ Remote/shared state will be introduced later, after the first test succeeds.
 
 Deliverables:
 
-1. ✅ Write `infra/app/main.tf`.
-2. ✅ Configure the Azure provider.
-3. ✅ Define the resource group `rg-launchpad-dev`.
+1. Write `infra/app/main.tf`. **Done.**
+2. Configure the Azure provider. **Done.**
+3. Define the resource group `rg-launchpad-dev`. **Done.**
 4. Get the Terraform code through the partner's automated checks.
 5. Run Terraform locally to plan and create the resource group.
 6. Keep the local Terraform state for this first test.
