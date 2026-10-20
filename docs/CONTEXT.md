@@ -53,37 +53,50 @@ For this first test, do **not** add:
 
 ### First-test completion criteria
 
-1. Terraform and GitHub Actions work are completed and reviewed.
-2. Automated Terraform checks pass.
-3. Nelo runs Terraform locally and creates the empty resource group.
-4. The resource group is confirmed to exist.
-5. Nelo's partner has an appropriate Azure role if they need to view/manage the resource.
+1. ✅ Terraform and GitHub Actions work are completed and merged to `main`.
+2. ⏳ Automated Terraform checks pass — the workflow runs `fmt -check`, `init -backend=false` and `validate`; confirm the latest run on `main` is green in the GitHub Actions tab.
+3. ❓ Nelo runs Terraform locally and creates the empty resource group — not yet confirmed.
+4. ❓ The resource group is confirmed to exist — not yet confirmed.
+5. ❓ Nelo's partner has an appropriate Azure role if they need to view/manage the resource — not yet done.
 6. Only after this works should the project add shared remote state and automated Azure deployment.
 
 ---
 
 ## Current Repository
 
-**GitHub repository:** `launchpad`
+**GitHub repository:** `ElmerC02/launchpad` (https://github.com/ElmerC02/launchpad)
 
 **Nelo's local path:**
 `C:\Users\josee\Documents\GitHub\launchpad`
 
-**Nelo's branch:**
-`feature/terraform-foundation`
-
-**Partner's initial branch:**
-`feature/github-actions`
-
-Do not assume the branches are currently synchronized.
-
-Do not assume pending changes are committed.
-
-The repository's current uploaded README contains only:
+### Files on `main` (as of 2026-10-19)
 
 ```text
-# launchpad
+.github/pull_request_template.md   PR template
+.github/workflows/terraform.yml    Terraform CI checks
+.gitignore                         Terraform exclusions (state, plans, .terraform/)
+README.md                          Required-tools install guide (Windows)
+docs/CONTEXT.md                    This file
+infra/app/main.tf                  Terraform settings, azurerm provider, resource group
+infra/app/.terraform.lock.hcl      Provider lock file (azurerm 4.81.0)
+requirements.txt                   Empty — not used yet
 ```
+
+The README is no longer just `# launchpad`; it is now a setup guide for Git, GitHub Desktop, VS Code, Terraform 1.16.6, the HashiCorp Terraform VS Code extension, and Azure CLI.
+
+### Branches on GitHub
+
+| Branch | Status vs `main` |
+| --- | --- |
+| `main` | Shared branch. Terraform config and CI workflow are merged (PRs #1–#15). |
+| `feature/terraform-foundation` | 1 unmerged commit, `Test`, that deliberately breaks `main.tf` (`source = "hashico rp/azurerm"`, `loca tion = ...`). Appears to be the CI failure test — **must not be merged**. |
+| `docs/contributing` | 2 unmerged commits: adds `docs/CONTRIBUTING.md` and updates the PR template. Needs a PR (see Known Issues). |
+| `Terraform-Workflow-Init` | Fully merged; can be deleted. |
+| `chore/pr-template`, `docs/context-init` | Older branches, already merged; can be deleted. |
+
+The partner's planned `feature/github-actions` branch does not exist on GitHub. The workflow work was done instead on `Terraform-Workflow-Init` and a series of `ElmerC02-patch-*` branches edited directly on GitHub (PRs #10–#15).
+
+Do not assume local branches match GitHub. Do not assume pending changes are committed.
 
 ---
 
@@ -165,41 +178,25 @@ For the first test, only an empty resource group should be created. The resource
 
 ## Terraform Layout
 
-### Intended first-test layout
-
-Use:
+### Decided layout (confirmed on `main`)
 
 ```text
-infra/main.tf
+infra/app/main.tf
 ```
 
-The simplified first-test design is to keep the Terraform settings, Azure provider configuration, and resource group definition in `infra/main.tf`.
+The project briefly planned to simplify to `infra/main.tf`, but the configuration stayed in **`infra/app/`**, and the CI workflow's working directory is `./infra/app`. This is the single Terraform configuration. Do not create `infra/main.tf` or another configuration elsewhere without agreeing on a layout change first.
 
-Earlier, the project considered:
+`infra/app/versions.tf` no longer exists; its `required_version` setting was folded into `main.tf`.
 
-```text
-infra/app/versions.tf
-```
+### Current `infra/app/main.tf` contents
 
-with:
+- `terraform` block: `required_version = "= 1.16.6"`, provider `hashicorp/azurerm` `~> 4.0`
+- `provider "azurerm"` with an empty `features {}` block
+- One resource: `azurerm_resource_group.launchpad`
+  - name: `rg-launchpad-dev`
+  - location: `westus2`
 
-```hcl
-terraform {
-  required_version = "= 1.16.6"
-}
-```
-
-After simplifying the project, the intended layout became `infra/main.tf`.
-
-**Before creating files, check the repository's current state. Do not create duplicate Terraform configurations if the existing files already contain the required configuration.**
-
-### Required resource
-
-The first Terraform test should define exactly one Azure resource group:
-
-```text
-rg-launchpad-dev
-```
+No backend is configured, so state is local.
 
 Nelo is responsible for the Terraform configuration.
 
@@ -207,7 +204,7 @@ Nelo is responsible for the Terraform configuration.
 
 ## Terraform State and Git
 
-A root `.gitignore` was discussed with:
+The root `.gitignore` **exists** on `main` and contains:
 
 ```gitignore
 **/.terraform/*
@@ -216,17 +213,7 @@ A root `.gitignore` was discussed with:
 *.tfplan
 ```
 
-Status still needs confirmation: **has `.gitignore` actually been created?**
-
-Terraform state must remain out of Git.
-
-The generated:
-
-```text
-.terraform.lock.hcl
-```
-
-should be committed.
+`infra/app/.terraform.lock.hcl` **is committed** (azurerm provider 4.81.0). Commit it again whenever it changes.
 
 For this first test, Nelo keeps Terraform state locally.
 
@@ -244,9 +231,9 @@ Remote/shared state will be introduced later, after the first test succeeds.
 
 Deliverables:
 
-1. Write `infra/main.tf`.
-2. Configure the Azure provider.
-3. Define the resource group `rg-launchpad-dev`.
+1. ✅ Write `infra/app/main.tf`.
+2. ✅ Configure the Azure provider.
+3. ✅ Define the resource group `rg-launchpad-dev`.
 4. Get the Terraform code through the partner's automated checks.
 5. Run Terraform locally to plan and create the resource group.
 6. Keep the local Terraform state for this first test.
@@ -255,29 +242,30 @@ Only Nelo runs `terraform plan` / `terraform apply` for this first test.
 
 ### Partner — GitHub Actions
 
-Deliverable:
+Planned deliverable was `.github/workflows/terraform-check.yml`. What actually exists is:
 
 ```text
-.github/workflows/terraform-check.yml
+.github/workflows/terraform.yml
 ```
 
-The workflow should:
+It was built from GitHub's Terraform starter workflow and trimmed down. Current behavior:
 
-- Run on pull requests targeting `main`.
-- Install Terraform **1.16.6** on the GitHub runner.
-- Run from the `infra` directory.
-- Run these commands in order:
-
-```text
-terraform fmt -check
-terraform init -backend=false
-terraform validate
-```
+- Runs on **pull requests** (any target branch) and on **pushes to `main`**.
+- Uses `environment: production` (GitHub creates this environment automatically; it is not needed for checks only).
+- Runs from `./infra/app`.
+- Installs Terraform **1.16.6** with `hashicorp/setup-terraform@v4` (wrapper off).
+- Steps, in order:
+  1. Show Terraform Files (debug step — see Known Issues)
+  2. `terraform fmt -check`
+  3. `terraform init -backend=false`
+  4. `terraform validate`
+  5. `terraform version`
+- `terraform plan` and `terraform apply` are present but **commented out**.
 
 The workflow:
 
-- Does not need Azure authentication.
-- Must not deploy Azure resources.
+- Does not authenticate to Azure.
+- Does not deploy Azure resources.
 
 ---
 
@@ -329,7 +317,11 @@ The intended workflow is:
 11. Confirm the partner has an appropriate Azure role if needed.
 12. Only then move to remote state and automated Azure deployment.
 
+Steps 1–7 are done (via PRs #1–#15). Steps 8–12 are not yet confirmed.
+
 ### CI failure test
+
+Possibly in progress: the `Test` commit on `feature/terraform-foundation` introduces broken Terraform. Confirm whether a PR was opened and the checks failed as expected. Note that this commit breaks validation (bad provider source and argument name), not only formatting — a pure formatting test would be, e.g., misaligning the `=` signs.
 
 After the workflow exists:
 
@@ -350,6 +342,9 @@ The contributors have practiced:
 - Pushes
 - Pull requests
 - Merging updated `main` into a feature branch
+- Editing files directly on GitHub (`ElmerC02-patch-*` branches)
+
+A PR template (`.github/pull_request_template.md`) is in use. Its checklist references a CONTRIBUTING guide that is only on the `docs/contributing` branch so far. That draft sets the branch naming convention `<type>/<short-description>` with types `feature/`, `fix/`, `chore/`, `docs/`, `refactor/`.
 
 Continue to explain Git operations rather than assuming they are familiar.
 
@@ -357,17 +352,28 @@ Do not assume either branch is currently up to date.
 
 ---
 
+## Known Issues in the Repository
+
+- **"Show Terraform Files" step doesn't do what it looks like.** In `terraform.yml` the `run:` value is multi-line but lacks `|`, so YAML folds the lines together and the step just echoes text instead of running `pwd`, `ls -la` and `cat main.tf`. Either add `run: |` or remove the step (it was for debugging the working directory, which is now fixed).
+- Step name typo: `Validate Terriform`.
+- `environment: production` is unnecessary for a check-only workflow and may be confusing later, when a real production deployment is added.
+- Leftover starter-template comments in `terraform.yml` describe Terraform Cloud and auto-apply, which this project doesn't use.
+- The `docs/contributing` branch changes PR template checkboxes from `- [ ]` to `- []`. GitHub only renders `- [ ]` (with a space) as a checkbox; fix this before merging.
+- PR template checklist links to CONTRIBUTING.md, which isn't on `main` yet.
+- `requirements.txt` is empty and unused (there is no Python code). Decide whether to keep it.
+
+---
+
 ## Current Known Unknowns / Things to Verify
 
-Before giving instructions that depend on these, verify them:
+Resolved (2026-10-19): Terraform lives in `infra/app/main.tf`; `infra/main.tf` and `infra/app/versions.tf` do not exist; `.gitignore` exists with the intended exclusions; `.terraform.lock.hcl` is committed; `main` is clean and matches GitHub.
 
-- Where the existing Terraform files currently are.
-- Whether `infra/main.tf` already exists.
-- Whether the older `infra/app/versions.tf` still exists.
-- Whether `.gitignore` exists and contains the intended Terraform exclusions.
-- Whether `.terraform.lock.hcl` exists.
-- Whether there are uncommitted changes.
-- Whether the two feature branches are synchronized with `main`.
+Still to verify:
+
+- Whether the latest GitHub Actions run on `main` passes.
+- Whether Nelo has run `terraform apply` and `rg-launchpad-dev` exists in Azure.
+- Whether the CI failure test (`Test` commit on `feature/terraform-foundation`) has been run and what happened.
+- Whether local branches on each contributor's machine match GitHub.
 - Whether the partner's Terraform and Azure CLI versions are confirmed.
 - Whether the HashiCorp Terraform VS Code extension is installed.
 - Exact Azure subscription offer and current spending-limit status.
@@ -379,8 +385,12 @@ Before giving instructions that depend on these, verify them:
 
 **Do not expand the project.**
 
-The next task is to inspect the existing repository/Terraform files and determine the current Terraform layout.
+The repository layout is now confirmed (`infra/app/main.tf`), and the CI checks are on `main`. Next:
 
-Specifically, confirm where the existing Terraform file is so the simplified `infra/main.tf` layout can be used correctly without creating duplicate configurations.
+1. Confirm the latest GitHub Actions run on `main` is green.
+2. Finish the CI failure test with the `Test` commit on `feature/terraform-foundation`, then revert it (do not merge the broken code).
+3. Nelo runs `terraform init`, `terraform plan`, and `terraform apply` locally from `infra/app/` to create `rg-launchpad-dev`, then confirms it exists in the Azure portal or with `az group show --name rg-launchpad-dev`.
+4. Assign an Azure role to `grp-launchpad-contributors` (e.g., Reader or Contributor scoped to the resource group).
+5. Clean up: fix the Known Issues above, open a PR for `docs/contributing`, delete merged branches.
 
 After that, continue with **one manageable step at a time**.
