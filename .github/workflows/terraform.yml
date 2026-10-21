@@ -10,12 +10,12 @@ permissions:
 
 jobs:
   terraform:
-    name: 'Terraform (${{ matrix.dir }})'
+    name: 'Terraform ${{ matrix.dir }}'
     runs-on: ubuntu-latest
     environment: production
 
     strategy:
-      fail-fast = false
+      fail-fast: false
       matrix:
         dir: [infra/app, infra/bootstrap]
 
@@ -55,7 +55,7 @@ jobs:
     - name: Terraform Init
       run: terraform init -backend=false
 
-    - name: Validate Terriform
+    - name: Validate Terraform
       run: terraform validate
 
     # Generates an execution plan for Terraform
